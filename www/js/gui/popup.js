@@ -7,7 +7,8 @@ function Popup(game, config) {
         height: this.game.height - 100,
         x: 50,
         y: 50,
-        originY: -this.game.height
+        originY: -this.game.height,
+        backgroundSpeed: 800
     };
 
     /* Overwrite some values */
@@ -80,7 +81,7 @@ Popup.prototype.show = function() {
 }
 
 Popup.prototype.showBackground = function(backgroundY) {
-    let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, 800, Phaser.Easing.Bounce.Out);
+    let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, this.config.backgroundSpeed);//, Phaser.Easing.Bounce.Out);
     tween.start();
 }
 
@@ -98,7 +99,7 @@ Popup.prototype.createButton = function(buttonLabel, callback, context) {
 }
 
 Popup.prototype.hide = function() {
-    let tween = this.game.add.tween(this.backgroundContainer).to({y:this.config.originY}, 800, Phaser.Easing.Bounce.Out);
+    let tween = this.game.add.tween(this.backgroundContainer).to({y:this.config.originY}, this.config.backgroundSpeed);//, Phaser.Easing.Bounce.Out);
     tween.onComplete.add(function() {
         this.destroy();
     }, this);
