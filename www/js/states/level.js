@@ -86,7 +86,7 @@ GAME.Level.prototype.enableClick = function() {
 };
 
 GAME.Level.prototype.startTurn = function() {
-    this.turns = this.game.rnd.integerInRange(1, 6);
+console.log(this.getCurrentPopup());
     this.getCurrentPopup().setActions(this.turns);
 
     this.enableClick();
@@ -115,10 +115,24 @@ GAME.Level.prototype.popupActionsUseClicked = function() {
 };
 
 GAME.Level.prototype.popupActionsMoveClicked = function() {
+    /*
     let popup = new PopupMove(this.game);
     this.popupsContainer.addChild(popup);
 
     this.startTurn();
 
+    popup.show();
+    */
+
+    let popup = new PopupRollActions(this.game);
+    popup.onActionsChoosen.add(this.onPopupRollActionsChoosen, this);
+    popup.show();
+};
+
+GAME.Level.prototype.onPopupRollActionsChoosen = function(turns) {
+    this.turns = turns;
+    let popup = new PopupMove(this.game);
+    this.popupsContainer.addChild(popup);
+    this.startTurn();
     popup.show();
 };

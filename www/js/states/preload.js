@@ -14,6 +14,8 @@ GAME.Preload.prototype.preload = function() {
     
     this.load.image('blank', 'assets/sprites/blank.png');
 
+    this.load.image('reel', 'assets/sprites/reel.png');
+
 
     this.load.bitmapFont('font:outline', 'assets/fonts/guiOutline.png', 'assets/fonts/guiOutline.xml');
     this.load.bitmapFont('font:normal', 'assets/fonts/gui.png', 'assets/fonts/gui.xml');
