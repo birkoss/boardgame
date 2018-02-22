@@ -1,4 +1,4 @@
-function PopupActions(game) {
+function PopupMove(game) {
     var config = {
     	width: game.width,
     	height: 50,
@@ -20,10 +20,10 @@ function PopupActions(game) {
     this.setActions(1);
 };
 
-PopupActions.prototype = Popup.prototype;
-PopupActions.prototype.constructor = Popup;
+PopupMove.prototype = Popup.prototype;
+PopupMove.prototype.constructor = Popup;
 
-PopupActions.prototype.setActions = function(value) {
+PopupMove.prototype.setActions = function(value) {
 	this.labelActions.text = value;
 	this.labelActions.updateText();
 	this.labelActions.x = this.labelActions.originalX - (this.labelActions.textWidth * 0.5);

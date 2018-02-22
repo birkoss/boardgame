@@ -9,22 +9,33 @@ function PopupActions(game) {
 
     Popup.call(this, game, config);
 
-	this.labelActions = this.game.add.bitmapText(0, 2, "font:normal", "XXX", 20);
-    this.labelActions.tint = 0x000000;
+ 	this.onMoveClicked = new Phaser.Signal();
+ 	this.onUseClicked = new Phaser.Signal();
 
-    this.labelActions.y = (this.backgroundContainer.height - 20) / 2;
-    this.labelActions.originalX = (this.backgroundContainer.width/2);
+	var buttons  = [
+		{'label':'Move', 'callback':this.buttonMoveClicked},
+		{'label':'Use', 'callback':this.buttonUseClicked},
+	];
 
-    this.backgroundContainer.addChild(this.labelActions);
+	let posX = this.backgroundContainer.width;
+	buttons.forEach(function (single_button) {
+		let button = this.createButton(single_button.label, single_button.callback, this);
+		button.y = (this.backgroundContainer.height - button.height) / 2;
+		button.x = posX - button.width - button.y;
 
-    this.setActions(1);
+		posX -= button.width + (button.y);
+
+	    this.backgroundContainer.addChild(button);
+	}, this);
 };
 
 PopupActions.prototype = Popup.prototype;
 PopupActions.prototype.constructor = Popup;
 
-PopupActions.prototype.setActions = function(value) {
-	this.labelActions.text = value;
-	this.labelActions.updateText();
-	this.labelActions.x = this.labelActions.originalX - (this.labelActions.textWidth * 0.5);
-}
+PopupActions.prototype.buttonMoveClicked = function() {
+	this.onMoveClicked.dispatch(this);
+};
+
+PopupActions.prototype.buttonUseClicked = function() {
+	this.onUseClicked.dispatch(this);
+};

@@ -18,9 +18,11 @@ GAME.Level.prototype.create = function() {
     this.popupsContainer = this.game.add.group();
 
     let popup = new PopupActions(this.game);
+    popup.onUseClicked.add(this.popupActionsUseClicked, this);
+    popup.onMoveClicked.add(this.popupActionsMoveClicked, this);
     this.popupsContainer.addChild(popup);
 
-    this.startTurn();
+    //this.startTurn();
 
     popup.show();
 };
@@ -98,7 +100,7 @@ GAME.Level.prototype.takeAction = function() {
 
 GAME.Level.prototype.endTurn = function() {
     if (this.turns <= 0) {
-        this.startTurn();
+        this.getCurrentPopup().hide();
     } else {
         this.enableClick();
     }   
@@ -106,4 +108,17 @@ GAME.Level.prototype.endTurn = function() {
 
 GAME.Level.prototype.getCurrentPopup = function() {
     return this.popupsContainer.getChildAt(this.popupsContainer.children.length-1);
+};
+
+GAME.Level.prototype.popupActionsUseClicked = function() {
+
+};
+
+GAME.Level.prototype.popupActionsMoveClicked = function() {
+    let popup = new PopupMove(this.game);
+    this.popupsContainer.addChild(popup);
+
+    this.startTurn();
+
+    popup.show();
 };

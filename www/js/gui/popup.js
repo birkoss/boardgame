@@ -83,3 +83,24 @@ Popup.prototype.showBackground = function(backgroundY) {
     let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, 1300, Phaser.Easing.Elastic.Out);
     tween.start();
 }
+
+Popup.prototype.createButton = function(buttonLabel, callback, context) {
+    let button = this.game.add.button(0, 0, "gui:button", callback, context, 0, 1, 0, 1);
+
+    let label = this.game.add.bitmapText(0, 2, "font:normal", buttonLabel, 10);
+    label.tint = 0xffffff;
+    label.x = (button.width - label.width)/2;
+    label.y = (button.height - label.height)/2;
+
+    button.addChild(label);
+
+    return button;
+}
+
+Popup.prototype.hide = function() {
+    let tween = this.game.add.tween(this.backgroundContainer).to({y:this.config.originY}, 1300, Phaser.Easing.Elastic.Out);
+    tween.onComplete.add(function() {
+        this.destroy();
+    }, this);
+    tween.start();
+}

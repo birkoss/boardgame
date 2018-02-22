@@ -17,6 +17,8 @@ GAME.Preload.prototype.preload = function() {
 
     this.load.bitmapFont('font:outline', 'assets/fonts/guiOutline.png', 'assets/fonts/guiOutline.xml');
     this.load.bitmapFont('font:normal', 'assets/fonts/gui.png', 'assets/fonts/gui.xml');
+
+    this.load.spritesheet('gui:button', 'assets/sprites/button.png', 100, 32);
 };
 
 GAME.Preload.prototype.create = function() {
