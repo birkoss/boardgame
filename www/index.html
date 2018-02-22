@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <title>Game</title>
+        
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/vendor/phaser.min.js"></script>
+
+         
+    </head>
+    <body>
+        <script type="text/javascript">
+            var config = {
+                type: Phaser.AUTO,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                scene: {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+            };
+
+            var game = new Phaser.Game(config);
+
+            function preload() {
+                //this.load.im
+                console.log('preload...');
+            }
+
+            function create() {
+                console.log('create...');
+            }
+
+            function update() {
+                
+            }
+        </script>
+    </body>
+</html>
