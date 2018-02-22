@@ -11,36 +11,28 @@
         
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/vendor/phaser.min.js"></script>
+        
+        <script type="text/javascript" src="js/states/boot.js"></script>
+        <script type="text/javascript" src="js/states/preload.js"></script>
+        <script type="text/javascript" src="js/states/level.js"></script>
+        
+        <script type="text/javascript" src="js/gui/popup.js"></script>
+        <script type="text/javascript" src="js/gui/popup-actions.js"></script>
+        <script type="text/javascript" src="js/gui/popup-move.js"></script>
 
          
     </head>
     <body>
         <script type="text/javascript">
-            var config = {
-                type: Phaser.AUTO,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                scene: {
-                    preload: preload,
-                    create: create,
-                    update: update
-                }
-            };
+            var GAME = GAME || {};
 
-            var game = new Phaser.Game(config);
+            GAME.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, '');
 
-            function preload() {
-                //this.load.im
-                console.log('preload...');
-            }
+            GAME.game.state.add('Boot', GAME.Boot);
+            GAME.game.state.add('Preload', GAME.Preload);
+            GAME.game.state.add('Level', GAME.Level);
 
-            function create() {
-                console.log('create...');
-            }
-
-            function update() {
-                
-            }
+            GAME.game.state.start('Boot');
         </script>
     </body>
 </html>
