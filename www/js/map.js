@@ -2,7 +2,6 @@ function Map(game) {
     Phaser.Group.call(this, game);
 
     this.onTileRevealed = new Phaser.Signal();
-    this.isClickable = false;
 
     this.init();
 
@@ -21,9 +20,11 @@ Map.prototype.createFOW = function() {
     for (let y=0; y<5; y++) {
         for (let x=0; x<5; x++) {
             let tile = this.create(0, 0, 'blank');
+            tile.anchor.set(0.5, 0.5);
             tile.width = tile.height = 48;
-            tile.x = x * tile.width;
-            tile.y = y * tile.height;
+            tile.grid = new Phaser.Point(x, y);
+            tile.x = (x * tile.width) + (tile.width/2);
+            tile.y = (y * tile.height) + (tile.height/2);
             tile.tint = 0x000000;
             tile.alpha = 0.8;
             tile.events.onInputUp.add(this.onFOWClicked, this);
@@ -43,8 +44,9 @@ Map.prototype.clickable = function(tileX, tileY) {
                 tmpY = y + tileY;
                 if (tmpX >= 0 && tmpX < 5 && tmpY >= 0 && tmpY < 5) {
                     let index = (tmpY * 5) + tmpX;
+                    console.log(index + " = " + tileX + "x" + tileY + " | " + tmpX + "x" + tmpY);
                     if (this.fow.getChildAt(index).alpha > 0) {
-                        this.fow.getChildAt(index).alpha = 1;
+                        this.fow.getChildAt(index).alpha = 0.4;
                         this.fow.getChildAt(index).inputEnabled = true;
                         tiles++;
                     }
@@ -89,6 +91,7 @@ Map.prototype.generate = function() {
     Phaser.ArrayUtils.shuffle(tiles);
     tiles.shift().setType("chest");
 
+    /* Place remaining weapons */
     let weapons = ['sword', 'bow', 'axe', 'rod'];
     weapons.forEach(function(single_weapon) {
         for (let i=0; i<4; i++) {
@@ -108,13 +111,11 @@ Map.prototype.getEmptyTiles = function() {
 
 Map.prototype.reveal = function(x, y) {
     this.fow.forEach(function(single_fow) {
-        if ((single_fow.x / single_fow.width) == x && (single_fow.y / single_fow.height) == y) {
-            let tilePos = new Phaser.Point(single_fow.x / single_fow.width, single_fow.y / single_fow.height);
-
+        if (single_fow.grid.x == x && single_fow.grid.y == y) {
             let tween = this.game.add.tween(single_fow).to({alpha: 0}, 300);
             tween.onComplete.add(function() {
                 this.map.children.forEach(function(single_tile) {
-                    if ((single_tile.x / single_tile.width) == tilePos.x && (single_tile.y / single_tile.height) == tilePos.y) {
+                    if (single_tile.grid.x == single_fow.grid.x && single_tile.grid.y == single_fow.grid.y) {
                         this.onTileRevealed.dispatch(single_tile);
                     }
                 }, this);               
@@ -135,5 +136,5 @@ Map.prototype.onFOWClicked = function(tile) {
         single_fow.inputEnabled = false;
     }, this);
 
-    this.reveal(tile.x / tile.width, tile.y / tile.height);
+    this.reveal(tile.grid.x, tile.grid.y);
 };

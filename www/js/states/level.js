@@ -28,6 +28,8 @@ GAME.Level.prototype.createMap = function() {
 
 GAME.Level.prototype.createPlayer = function() {   
     this.player = this.map.create(0, 0, 'blank');
+    this.player.anchor.set(0.5, 0.5);
+    this.player.grid = new Phaser.Point(2, 5);
     this.player.width = this.player.height = 48;
     this.player.x = 2 * this.player.width;
     this.player.y = 5 * this.player.height;
@@ -53,7 +55,8 @@ GAME.Level.prototype.onWeaponPopupChanged = function(newWeapon) {
 GAME.Level.prototype.move = function(tile) {
     let tween = this.game.add.tween(this.player).to({x:tile.x, y:tile.y}, 400);
     tween.onComplete.add(function() {
-        this.enableClick(tile.x / tile.width, tile.y / tile.height);
+        this.enableClick(tile.grid.x, tile.grid.y);
+        this.player.grid = new Phaser.Point(tile.grid.x, tile.grid.y);
     }, this);
     tween.start();
 };
@@ -61,7 +64,7 @@ GAME.Level.prototype.move = function(tile) {
 GAME.Level.prototype.onMapTileRevealed = function(tile) {
     switch(tile.type) {
         case 'disabled':
-            this.enableClick(this.player.x / this.player.width, this.player.y / this.player.height);
+            this.enableClick(this.player.grid.x, this.player.grid.y);
             break;
         case 'enemy':
             if (this.currentWeapon == tile.weapon) {
@@ -83,17 +86,21 @@ GAME.Level.prototype.onMapTileRevealed = function(tile) {
 };
 
 GAME.Level.prototype.attack = function(tile) {
-    this.enableClick(tile.x / tile.width, tile.y / tile.height);
+    //this.map.reveal(tile.grid.x, tile.grid.y);
+    this.move(tile);
 };
 
 GAME.Level.prototype.defend = function(tile) {
     this.map.map.children.forEach(function(single_tile) {
         if (single_tile.type == 'start') {
-            this.player.alpha = 0;
+            console.log("GAME OVER");
             this.player.x = single_tile.x;
             this.player.y = single_tile.y + single_tile.height;
+            this.player.grid.x = single_tile.grid.x;
+            this.player.grid.y = single_tile.grid.y;
+
             this.map.reset();
-            this.map.reveal(single_tile.x / single_tile.width, single_tile.y / single_tile.height);
+            this.map.reveal(single_tile.grid.x, single_tile.grid.y);
         }
     }, this);
 };
