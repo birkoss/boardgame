@@ -27,7 +27,7 @@ Reel.prototype.update = function() {
 
 Reel.prototype.buttonPickClicked = function() {
      if (this.reel.speed > 0) {
-        let tween = this.game.add.tween(this.reel).to({speed:0}, 1500, Phaser.Easing.Circular.In);
+        let tween = this.game.add.tween(this.reel).to({speed:0}, 500, Phaser.Easing.Circular.In);
         tween.onComplete.add(function() {
             /* Stop the reel on the NEXT correct value */
             let next = Math.round(Math.abs(this.reel.tilePosition.y) / 48.0) * 48;
@@ -36,6 +36,7 @@ Reel.prototype.buttonPickClicked = function() {
             tween.onComplete.add(function() {
                 this.value = ((next / 48) % 6) + 1;
                 console.log("Value picked: " + this.value);
+                this.value = 100;
                 this.onValueChanged.dispatch(this, this.value);
             }, this);
             tween.start();

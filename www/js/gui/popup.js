@@ -8,7 +8,8 @@ function Popup(game, config) {
         x: 50,
         y: 50,
         originY: -this.game.height,
-        backgroundSpeed: 800
+        backgroundSpeed: 200,
+        overlaySpeed: 500
     };
 
     /* Overwrite some values */
@@ -70,7 +71,7 @@ Popup.prototype.show = function() {
     this.backgroundContainer.y = this.config.originY;
 
     if (this.overlayContainer != null) {
-        let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0.8}, 500);
+        let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0.8}, this.config.overlaySpeed);
         tween.onComplete.add(function() {
             this.showBackground(backgroundY);
         }, this);

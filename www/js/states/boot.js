@@ -20,6 +20,7 @@ GAME.Boot.prototype.create = function() {
     this.game.renderer.renderSession.roundPixels = true;  
     this.game.stage.smoothed = false;
     Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);
+    Phaser.scaleModes.DEFAULT = 1;
 
     this.state.start('Preload');
 };

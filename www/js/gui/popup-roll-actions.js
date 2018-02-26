@@ -6,7 +6,8 @@ function PopupRollActions(game) {
     	x: 50,
     	y: (game.height - 300) / 2,
     	originY: game.height,
-        backgroundSpeed: 300
+        backgroundSpeed: 300,
+        overlaySpeed: 100
     };
 
     Popup.call(this, game, config);

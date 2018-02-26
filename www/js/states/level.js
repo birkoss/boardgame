@@ -9,130 +9,98 @@ GAME.Level.prototype.create = function() {
 
     this.createMap();
 
+    this.createWeaponPopup();
+
     this.createPlayer();
-
-
-
-    this.actionsContainer = this.game.add.group();
-
-    this.popupsContainer = this.game.add.group();
-
-    let popup = new PopupActions(this.game);
-    popup.onUseClicked.add(this.popupActionsUseClicked, this);
-    popup.onMoveClicked.add(this.popupActionsMoveClicked, this);
-    this.popupsContainer.addChild(popup);
-
-    //this.startTurn();
-
-    popup.show();
 };
 
 GAME.Level.prototype.createMap = function() {
-    this.map = this.game.add.tilemap('level:test', 48, 48);
+    this.mapContainer = this.game.add.group();
+    this.map = new Map(this.game);
+    this.map.onTileRevealed.add(this.onMapTileRevealed, this);
+    this.mapContainer.addChild(this.map);
 
-    this.map.addTilesetImage('tiles', 'tileset:tiles');
+    this.map.reveal(2, 4);
 
-    // Create layers
-    this.layers = {};
-    this.layers.floor = this.map.createLayer(0);
-
-    this.layers.floor.resizeWorld();
+    this.mapContainer.x = (this.game.width - this.mapContainer.width) / 2;
+    this.mapContainer.y = (this.game.height - this.mapContainer.height) / 2;
 };
 
-GAME.Level.prototype.createPlayer = function() {
-    let startingPosition = this.map.getTile(1, 0);
+GAME.Level.prototype.createPlayer = function() {   
+    this.player = this.map.create(0, 0, 'blank');
+    this.player.width = this.player.height = 48;
+    this.player.x = 2 * this.player.width;
+    this.player.y = 5 * this.player.height;
+    this.player.tint = 0xff00ff;
+    this.player.alpha = 0;
 
-    console.log(startingPosition);
-
-
-    this.player = this.game.add.sprite(startingPosition.worldX, startingPosition.worldY, "tileset:player");
-
-    this.player.cameraOffsetX = -24;
-
-
-
-    this.game.camera.follow(this.player);
 };
 
-GAME.Level.prototype.enableClick = function() {
-    let playerTile = this.map.getTileWorldXY(this.player.x, this.player.y);
+GAME.Level.prototype.createWeaponPopup = function() {
+    this.currentWeapon = "";
 
-    let nextTile = null;
-    for (let y=-1; y<=1; y++) {
-        for (let x=-1; x<=1; x++) {
-            if (Math.abs(x) != Math.abs(y)) {
-                nextTile = this.map.getTile(playerTile.x + x, playerTile.y + y);
-                if (nextTile != null) {
-                    let action = this.actionsContainer.create(nextTile.worldX, nextTile.worldY, "blank");
-                    action.tint = 0xff0000;
-                    action.alpha = 0.4;
-                    action.width = action.height = 48;
-                    action.direction = {x:x, y:y};
-                    action.inputEnabled = true;
-                    action.events.onInputUp.add(function() {
-                        this.takeAction();
+    let popup = new PopupWeapon(this.game);
+    popup.onWeaponChoosen.add(this.onWeaponPopupChanged, this);
+    popup.selectWeapon("sword");
+    popup.show();
+};
 
-                        this.actionsContainer.removeAll(true);
+GAME.Level.prototype.onWeaponPopupChanged = function(newWeapon) {
+    this.currentWeapon = newWeapon;
+    console.log("Current Weapon: " + newWeapon);
+};
 
-                        this.player.x += (action.direction.x * 48);
-                        this.player.y += (action.direction.y * 48);
+GAME.Level.prototype.move = function(tile) {
+    let tween = this.game.add.tween(this.player).to({x:tile.x, y:tile.y}, 400);
+    tween.onComplete.add(function() {
+        this.enableClick(tile.x / tile.width, tile.y / tile.height);
+    }, this);
+    tween.start();
+};
 
-                        this.endTurn();
-                    }, this);
-                }
+GAME.Level.prototype.onMapTileRevealed = function(tile) {
+    switch(tile.type) {
+        case 'disabled':
+            this.enableClick(this.player.x / this.player.width, this.player.y / this.player.height);
+            break;
+        case 'enemy':
+            if (this.currentWeapon == tile.weapon) {
+                this.attack(tile);
+            } else {
+                this.defend(tile);
             }
-        }
+            break;
+        case 'key':
+        case 'chest':
+            this.move(tile);
+            break;
+        default:
+            if (this.player.alpha == 0) {
+                this.game.add.tween(this.player).to({alpha: 1}, 300).start();
+            }
+            this.move(tile);
     }
 };
 
-GAME.Level.prototype.startTurn = function() {
-console.log(this.getCurrentPopup());
-    this.getCurrentPopup().setActions(this.turns);
-
-    this.enableClick();
+GAME.Level.prototype.attack = function(tile) {
+    this.enableClick(tile.x / tile.width, tile.y / tile.height);
 };
 
-GAME.Level.prototype.takeAction = function() {
-    this.turns--;
-
-    this.getCurrentPopup().setActions(this.turns);
+GAME.Level.prototype.defend = function(tile) {
+    this.map.map.children.forEach(function(single_tile) {
+        if (single_tile.type == 'start') {
+            this.player.alpha = 0;
+            this.player.x = single_tile.x;
+            this.player.y = single_tile.y + single_tile.height;
+            this.map.reset();
+            this.map.reveal(single_tile.x / single_tile.width, single_tile.y / single_tile.height);
+        }
+    }, this);
 };
 
-GAME.Level.prototype.endTurn = function() {
-    if (this.turns <= 0) {
-        this.getCurrentPopup().hide();
-    } else {
-        this.enableClick();
-    }   
-};
-
-GAME.Level.prototype.getCurrentPopup = function() {
-    return this.popupsContainer.getChildAt(this.popupsContainer.children.length-1);
-};
-
-GAME.Level.prototype.popupActionsUseClicked = function() {
-
-};
-
-GAME.Level.prototype.popupActionsMoveClicked = function() {
-    /*
-    let popup = new PopupMove(this.game);
-    this.popupsContainer.addChild(popup);
-
-    this.startTurn();
-
-    popup.show();
-    */
-
-    let popup = new PopupRollActions(this.game);
-    popup.onActionsChoosen.add(this.onPopupRollActionsChoosen, this);
-    popup.show();
-};
-
-GAME.Level.prototype.onPopupRollActionsChoosen = function(turns) {
-    this.turns = turns;
-    let popup = new PopupMove(this.game);
-    this.popupsContainer.addChild(popup);
-    this.startTurn();
-    popup.show();
+GAME.Level.prototype.enableClick = function(x, y) {
+    let clickableTiles = this.map.clickable(x, y);
+    if (clickableTiles == 0) {
+        alert('GAME OVER');
+    }
 };
