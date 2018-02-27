@@ -11,7 +11,7 @@ GAME.Preload.prototype.preload = function() {
 
     this.load.image('tileset:tiles', 'assets/sprites/tiles.png');
     this.load.image('tileset:player', 'assets/sprites/player.png');
-    
+        
     this.load.image('blank', 'assets/sprites/blank.png');
 
     this.load.image('reel', 'assets/sprites/reel.png');

@@ -1,4 +1,7 @@
 function Map(game) {
+
+    this.cheat = true;
+
     Phaser.Group.call(this, game);
 
     this.onTileRevealed = new Phaser.Signal();
@@ -26,7 +29,7 @@ Map.prototype.createFOW = function() {
             tile.x = (x * tile.width) + (tile.width/2);
             tile.y = (y * tile.height) + (tile.height/2);
             tile.tint = 0x000000;
-            tile.alpha = 0.8;
+            tile.alpha = (this.cheat ? 0.8 : 1);
             tile.events.onInputUp.add(this.onFOWClicked, this);
 
             this.fow.addChild(tile);
@@ -46,7 +49,9 @@ Map.prototype.clickable = function(tileX, tileY) {
                     let index = (tmpY * 5) + tmpX;
                     console.log(index + " = " + tileX + "x" + tileY + " | " + tmpX + "x" + tmpY);
                     if (this.fow.getChildAt(index).alpha > 0) {
-                        this.fow.getChildAt(index).alpha = 0.4;
+                        if (this.cheat) {
+                            this.fow.getChildAt(index).alpha = 0.4;
+                        }
                         this.fow.getChildAt(index).inputEnabled = true;
                         tiles++;
                     }
@@ -127,7 +132,7 @@ Map.prototype.reveal = function(x, y) {
 
 Map.prototype.reset = function() {
     this.fow.forEach(function(single_fow) {
-        single_fow.alpha = 0.8;
+        single_fow.alpha = (this.cheat ? 0.8 : 1);
     }, this);
 };
 
