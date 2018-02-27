@@ -35,13 +35,22 @@ Tile.prototype.setType = function(newType) {
             //this.tile.tint = 0xf4f4f4;
             break;
         case 'disabled':
-            //this.tile.tint = 0xcccccc;
+            this.item = this.create(0, 0, 'tileset:world');
+            this.item.anchor.set(0.5, 0.5);
+
+            this.item.frame = 288;
             break;
         case 'key':
-            //this.tile.tint = 0xffffcc;
+            this.item = this.create(0, 0, 'tileset:items');
+            this.item.anchor.set(0.5, 0.5);
+
+            this.item.frame = 137;
             break;
         case 'chest':
-            //this.tile.tint = 0xffff33;
+            this.item = this.create(0, 0, 'tileset:world');
+            this.item.anchor.set(0.5, 0.5);
+
+            this.item.frame = 258;
             break;
     }
 };
