@@ -28,12 +28,20 @@
         <script type="text/javascript" src="js/map.js"></script>
         <script type="text/javascript" src="js/tile.js"></script>
         <script type="text/javascript" src="js/unit.js"></script>
+        <script type="text/javascript" src="js/effect.js"></script>
 
          
     </head>
     <body>
         <script type="text/javascript">
             var GAME = GAME || {};
+
+            GAME.player = {
+                health: 100,
+                max_health: 100,
+                items: [],
+                allies: []
+            };
 
             GAME.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, '');
 

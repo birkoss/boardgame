@@ -8,15 +8,18 @@ function Tile(game, x, y) {
     this.y = (y * this.height) + (this.height/2);
 
     this.onClicked = new Phaser.Signal();
+
+
 };
 
 Tile.prototype = Object.create(Phaser.Group.prototype);
 Tile.prototype.constructor = Tile;
 
 Tile.prototype.init = function() {
-    this.tile = this.create(0, 0, 'blank');
+    this.tile = this.create(0, 0, 'tileset:world');
     this.tile.anchor.set(0.5, 0.5);
-    this.tile.width = this.tile.height = 48;
+
+    this.tile.frame = 688;
     this.type = "";
 };
 
@@ -25,45 +28,26 @@ Tile.prototype.setType = function(newType) {
 
     switch (this.type) {
         case 'enemy':
-            switch (this.weapon) {
-                case 'sword':
-                    this.tile.tint = 0xff0000;
-                    break;
-                case 'bow':
-                    this.tile.tint = 0x00ff00;
-                    break;
-                case 'axe':
-                    this.tile.tint = 0x0000ff;
-                    break;
-                case 'rod':
-                    this.tile.tint = 0xff00ff;
-                    break;
-            }
+            this.unit = new Unit(this.game, 'rat');
+            this.addChild(this.unit);
             break;
         case 'start':
-            this.tile.tint = 0xf4f4f4;
+            //this.tile.tint = 0xf4f4f4;
             break;
         case 'disabled':
-            this.tile.tint = 0xcccccc;
+            //this.tile.tint = 0xcccccc;
             break;
         case 'key':
-            this.tile.tint = 0xffffcc;
+            //this.tile.tint = 0xffffcc;
             break;
         case 'chest':
-            this.tile.tint = 0xffff33;
+            //this.tile.tint = 0xffff33;
             break;
     }
 };
 
 Tile.prototype.setWeapon = function(newWeapon) {
     this.weapon = newWeapon;
-
-    this.unit = this.create(0, 0, 'blank');
-    this.unit.anchor.set(0.5, 0.5);
-    this.unit.width = this.unit.height = 32;
-    this.unit.x = this.unit.y = 0;
-    this.unit.tint = 0x000000;
-
 };
 
 Tile.prototype.enableClick = function() {

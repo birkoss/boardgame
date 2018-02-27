@@ -1,6 +1,6 @@
 function Map(game) {
 
-    this.cheat = true;
+    this.cheat = false;
 
     Phaser.Group.call(this, game);
 

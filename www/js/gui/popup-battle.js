@@ -12,6 +12,12 @@ function PopupBattle(game) {
 
     Popup.call(this, game, config);
 
+    this.player = new Unit(this.game, 'knight');
+    this.player.x = 50;
+    this.player.face(Unit.Facing.Right);
+    this.player.y = 100;
+    this.player.setHealth(GAME.player.health);
+    this.backgroundContainer.addChild(this.player);
 
     this.buttons = [];
     let button = this.game.add.button(0, 0, "gui:button", this.onButtonAttackClicked, this, 0, 1, 0, 1);
@@ -35,18 +41,11 @@ PopupBattle.prototype.constructor = Popup;
 PopupBattle.prototype.setTile = function(tile) {
     this.tile = tile;
 
-    this.enemy = new Unit(this.game);
+    this.enemy = new Unit(this.game, this.tile.unit.unitID);
+    this.enemy.setHealth(this.tile.unit.health);
     this.enemy.x = this.backgroundContainer.width - 50;
     this.enemy.y = 100;
     this.backgroundContainer.addChild(this.enemy);
-};
-
-PopupBattle.prototype.setPlayer = function(unit) {
-    this.player = new Unit(this.game);
-    this.player.x = 50;
-    this.player.y = 100;
-    this.player.health = unit.health;
-    this.backgroundContainer.addChild(this.player);
 };
 
 PopupBattle.prototype.startAttack = function() {
@@ -76,7 +75,7 @@ PopupBattle.prototype.startAttack = function() {
     units.forEach(function(single_unit) {
         single_unit.unit.originX = single_unit.unit.x;
 
-        let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 500);
+        let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 200, Phaser.Easing.Quadratic.In);
         tween.onComplete.add(function() {
             if (this.game.tweens.getAll().length == 1) {
                 labels.forEach(function(single_label) {
@@ -90,10 +89,13 @@ PopupBattle.prototype.startAttack = function() {
 };
 
 PopupBattle.prototype.generateAttack = function() {
-    this.player.takeDamage(this.enemy.damage);
-    this.enemy.takeDamage(this.player.damage);
-
-    this.endAttack();
+    let effect = new Effect(this.game, this.player.x + (this.player.width/2), this.player.y, "attack");
+    this.backgroundContainer.addChild(effect);
+    effect.onEffectComplete.add(function() {
+        this.player.takeDamage(this.enemy.damage);
+        this.enemy.takeDamage(this.player.damage);
+        this.endAttack();
+    }, this);
 };
 
 PopupBattle.prototype.endAttack = function() {
@@ -201,5 +203,5 @@ PopupBattle.prototype.onButtonAttackClicked = function(button) {
 
 PopupBattle.prototype.onButtonOkClicked = function(button) {
     this.hide();
-    this.onBattleCompleted.dispatch(button.win, this.tile);
+    this.onBattleCompleted.dispatch(button.win, {tile:this.tile, enemy:this.enemy});
 };
