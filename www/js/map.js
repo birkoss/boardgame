@@ -48,7 +48,6 @@ Map.prototype.clickable = function(tileX, tileY) {
                 tmpY = y + tileY;
                 if (tmpX >= 0 && tmpX < 5 && tmpY >= 0 && tmpY < 5) {
                     let index = (tmpY * 5) + tmpX;
-                    console.log(index + " = " + tileX + "x" + tileY + " | " + tmpX + "x" + tmpY);
                     if (this.fow.getChildAt(index).alpha > 0) {
                         if (this.cheat) {
                             this.fow.getChildAt(index).alpha = 0.4;

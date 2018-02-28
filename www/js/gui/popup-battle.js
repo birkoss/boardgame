@@ -12,12 +12,19 @@ function PopupBattle(game) {
 
     Popup.call(this, game, config);
 
+    this.createMap();
+
     this.player = new Unit(this.game, 'knight');
-    this.player.x = 50;
+    this.player.x = this.map.getChildAt(11).x;
     this.player.face(Unit.Facing.Right);
-    this.player.y = 100;
+    this.player.y = this.map.getChildAt(11).y;
     this.player.setHealth(GAME.player.health);
-    this.backgroundContainer.addChild(this.player);
+    this.map.addChild(this.player);
+
+    this.player.bar = new Bar(this.game, GAME.player.health, GAME.player.max_health);
+    this.player.bar.x = this.player.x;
+    this.player.bar.y = this.player.y - 50;
+    this.map.addChild(this.player.bar);
 
     this.buttons = [];
     let button = this.game.add.button(0, 0, "gui:button", this.onButtonAttackClicked, this, 0, 1, 0, 1);
@@ -38,14 +45,34 @@ function PopupBattle(game) {
 PopupBattle.prototype = Popup.prototype;
 PopupBattle.prototype.constructor = Popup;
 
+PopupBattle.prototype.createMap = function() {
+    this.map = this.game.add.group();
+
+    for (let y=0; y<5; y++) {
+        for (let x=0; x<5; x++) {
+            let tile = new Tile(this.game, x, y);
+            this.map.addChild(tile);
+        }
+    }
+
+    this.map.x = (this.backgroundContainer.width - this.map.width) / 2;
+    this.map.y = this.map.x;
+    this.backgroundContainer.addChild(this.map);
+};
+
 PopupBattle.prototype.setTile = function(tile) {
     this.tile = tile;
 
     this.enemy = new Unit(this.game, this.tile.unit.unitID);
     this.enemy.setHealth(this.tile.unit.health);
-    this.enemy.x = this.backgroundContainer.width - 50;
-    this.enemy.y = 100;
-    this.backgroundContainer.addChild(this.enemy);
+    this.enemy.x = this.map.getChildAt(13).x;
+    this.enemy.y = this.map.getChildAt(13).y;
+    this.map.addChild(this.enemy);
+
+    this.enemy.bar = new Bar(this.game, this.tile.unit.health, this.tile.unit.health);
+    this.enemy.bar.x = this.enemy.x;
+    this.enemy.bar.y = this.enemy.y - 50;
+    this.map.addChild(this.enemy.bar);
 };
 
 PopupBattle.prototype.startAttack = function() {
@@ -57,30 +84,16 @@ PopupBattle.prototype.startAttack = function() {
         direction: -1
     }];
 
-    let labels = [];
-    units.forEach(function(single_unit) {
-        single_unit.unit.damage = this.game.rnd.integerInRange(1, 6);
-
-        let label = this.game.add.bitmapText(0, 2, "font:normal", single_unit.unit.damage, 10);
-        labels.push(label);
-
-        label.tint = 0x000000;
-        label.x = single_unit.unit.x;
-        label.y = (single_unit.unit.y - (single_unit.unit.height/2) - 30);
-        this.backgroundContainer.addChild(label);
-    }, this);
-
     let middle = ((this.enemy.x - this.player.x) / 2) - (this.player.width * .25);
 
     units.forEach(function(single_unit) {
+        single_unit.unit.damage = this.game.rnd.integerInRange(1, 6);
+
         single_unit.unit.originX = single_unit.unit.x;
 
         let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 100, Phaser.Easing.Quadratic.In);
         tween.onComplete.add(function() {
             if (this.game.tweens.getAll().length == 1) {
-                labels.forEach(function(single_label) {
-                    single_label.destroy();
-                }, this);
                 this.generateAttack();
             }
         }, this);
@@ -89,13 +102,39 @@ PopupBattle.prototype.startAttack = function() {
 };
 
 PopupBattle.prototype.generateAttack = function() {
+
+    this.showDamage(this.player, this.enemy.damage);
+
+    this.showDamage(this.enemy, this.player.damage);
+
     let effect = new Effect(this.game, this.player.x + (this.player.width/2), this.player.y, "attack");
     this.backgroundContainer.addChild(effect);
     effect.onEffectComplete.add(function() {
         this.player.takeDamage(this.enemy.damage);
+        this.player.bar.move(this.player.health);
+        GAME.player.health = this.player.health;
+        
         this.enemy.takeDamage(this.player.damage);
+        this.enemy.bar.move(this.enemy.health);
+        console.log("END");
         this.endAttack();
     }, this);
+};
+
+PopupBattle.prototype.showDamage = function(unit, damage) {
+    let label = this.game.add.bitmapText(0, 2, "font:outline", damage, 20);
+    label.x = unit.x + (label.width/2);// + (unit.width/2);
+    label.y = (unit.y - (unit.height/2));
+
+    let tween = this.game.add.tween(label).to({y:label.y - 50}, 1000);
+    tween.onComplete.add(function(){
+        label.destroy();
+    }, this);
+    tween.start();
+
+    this.game.add.tween(label).to({alpha:0}, 800).start();
+
+    this.backgroundContainer.addChild(label);
 };
 
 PopupBattle.prototype.endAttack = function() {
@@ -107,22 +146,22 @@ PopupBattle.prototype.endAttack = function() {
         direction: -1
     }];
 
-    let survivors = 0;
+    this.survivors = 0;
     units.forEach(function(single_unit) {
         if (single_unit.unit.isAlive()) {
-            survivors++;
+            this.survivors++;
             let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 100, Phaser.Easing.Quadratic.Out);
             tween.onComplete.add(function() {
-                if (this.game.tweens.getAll().length == 1) {
+                this.survivors--;
+                if (this.survivors <= 0) {
                     this.endTurn();
                 }
             }, this);
             tween.start();
         }
     }, this);
-
     /* No survivor left */
-    if (survivors == 0) {
+    if (this.survivors == 0) {
         this.endTurn();
     }
 };
