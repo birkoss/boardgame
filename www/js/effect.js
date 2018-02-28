@@ -11,7 +11,7 @@ function Effect(game, x, y, type) {
 
     switch (type) {
         case "attack":
-            this.animations.add('idle', [10, 11, 10, 11, 10], 8, false);
+            this.animations.add('idle', [10, 11, 10], 8, false);
             break;
     }
     this.animations.play('idle');

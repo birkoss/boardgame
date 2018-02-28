@@ -6,7 +6,7 @@ function PopupBattle(game) {
     	x: 50,
     	y: (game.height - 300) / 2,
     	originY: game.height,
-        backgroundSpeed: 1000,
+        backgroundSpeed: 250,
         overlaySpeed: 100
     };
 
@@ -75,7 +75,7 @@ PopupBattle.prototype.startAttack = function() {
     units.forEach(function(single_unit) {
         single_unit.unit.originX = single_unit.unit.x;
 
-        let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 200, Phaser.Easing.Quadratic.In);
+        let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 100, Phaser.Easing.Quadratic.In);
         tween.onComplete.add(function() {
             if (this.game.tweens.getAll().length == 1) {
                 labels.forEach(function(single_label) {
@@ -111,7 +111,7 @@ PopupBattle.prototype.endAttack = function() {
     units.forEach(function(single_unit) {
         if (single_unit.unit.isAlive()) {
             survivors++;
-            let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 200, Phaser.Easing.Quadratic.Out);
+            let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 100, Phaser.Easing.Quadratic.Out);
             tween.onComplete.add(function() {
                 if (this.game.tweens.getAll().length == 1) {
                     this.endTurn();

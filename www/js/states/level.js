@@ -71,6 +71,12 @@ GAME.Level.prototype.onMapTileRevealed = function(tile) {
             this.enableClick(this.player.grid.x, this.player.grid.y);
             break;
         case 'enemy':
+            if (this.player.x < tile.x) {
+                this.player.face(Unit.Facing.Right);
+            } else if (this.player.x > tile.x) {
+                this.player.face(Unit.Facing.Left);
+            }
+
             let popup = new PopupBattle(this.game);
             popup.setTile(tile);
             popup.onBattleCompleted.add(this.onPopupBattleCompleted, this);
