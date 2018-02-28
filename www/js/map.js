@@ -30,7 +30,6 @@ Map.prototype.createFOW = function() {
             tile.y = (y * tile.height) + (tile.height/2);
             tile.tint = 0x000000;
             tile.alpha = (this.cheat ? 0.8 : 1);
-            tile.events.onInputUp.add(this.onFOWClicked, this);
 
             this.fow.addChild(tile);
         }
@@ -38,6 +37,8 @@ Map.prototype.createFOW = function() {
 };
 
 Map.prototype.clickable = function(tileX, tileY) {
+    this.actions = [];
+
     let tiles = 0;
     let tmpX, tmpY = 0;
     for (let y=-1; y<=1; y++) {
@@ -52,7 +53,17 @@ Map.prototype.clickable = function(tileX, tileY) {
                         if (this.cheat) {
                             this.fow.getChildAt(index).alpha = 0.4;
                         }
-                        this.fow.getChildAt(index).inputEnabled = true;
+
+                        let action = this.create(0, 0, 'tileset:effectsSmall');
+                        action.anchor.set(0.5, 0.5);
+                        action.frame = 70;
+                        action.x = this.fow.getChildAt(index).x;
+                        action.y = this.fow.getChildAt(index).y;
+                        action.grid = new Phaser.Point(tmpX, tmpY);
+                        action.inputEnabled = true;
+                        action.events.onInputUp.add(this.onActionClicked, this);
+                        this.actions.push(action);
+
                         tiles++;
                     }
                 }
@@ -136,10 +147,12 @@ Map.prototype.reset = function() {
     }, this);
 };
 
-Map.prototype.onFOWClicked = function(tile) {
-    this.fow.forEach(function(single_fow) {
-        single_fow.inputEnabled = false;
+Map.prototype.onActionClicked = function(tile) {
+    this.actions.forEach(function(single_action) {
+        single_action.destroy();
     }, this);
+
+    console.log(tile.grid);
 
     this.reveal(tile.grid.x, tile.grid.y);
 };

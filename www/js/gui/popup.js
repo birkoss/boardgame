@@ -82,7 +82,7 @@ Popup.prototype.show = function() {
 }
 
 Popup.prototype.showBackground = function(backgroundY) {
-    let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, this.config.backgroundSpeed);//, Phaser.Easing.Bounce.Out);
+    let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, this.config.backgroundSpeed, Phaser.Easing.Exponential.Out);
     tween.start();
 }
 

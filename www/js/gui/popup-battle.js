@@ -6,7 +6,7 @@ function PopupBattle(game) {
     	x: 50,
     	y: (game.height - 300) / 2,
     	originY: game.height,
-        backgroundSpeed: 300,
+        backgroundSpeed: 1000,
         overlaySpeed: 100
     };
 
@@ -111,7 +111,7 @@ PopupBattle.prototype.endAttack = function() {
     units.forEach(function(single_unit) {
         if (single_unit.unit.isAlive()) {
             survivors++;
-            let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 500);
+            let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 200, Phaser.Easing.Quadratic.Out);
             tween.onComplete.add(function() {
                 if (this.game.tweens.getAll().length == 1) {
                     this.endTurn();

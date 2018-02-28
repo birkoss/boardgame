@@ -38,7 +38,7 @@ Tile.prototype.setType = function(newType) {
             this.item = this.create(0, 0, 'tileset:world');
             this.item.anchor.set(0.5, 0.5);
 
-            this.item.frame = 288;
+            this.item.frame = 208;
             break;
         case 'key':
             this.item = this.create(0, 0, 'tileset:items');
