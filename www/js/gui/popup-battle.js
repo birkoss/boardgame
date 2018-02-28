@@ -76,6 +76,7 @@ PopupBattle.prototype.setTile = function(tile) {
 };
 
 PopupBattle.prototype.startAttack = function() {
+    console.log("startAttack");
     let units = [{
         unit:this.player,
         direction: 1
@@ -86,6 +87,7 @@ PopupBattle.prototype.startAttack = function() {
 
     let middle = ((this.enemy.x - this.player.x) / 2) - (this.player.width * .25);
 
+    let attackers = 2;
     units.forEach(function(single_unit) {
         single_unit.unit.damage = this.game.rnd.integerInRange(1, 6);
 
@@ -93,7 +95,8 @@ PopupBattle.prototype.startAttack = function() {
 
         let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.x+(middle * single_unit.direction)}, 100, Phaser.Easing.Quadratic.In);
         tween.onComplete.add(function() {
-            if (this.game.tweens.getAll().length == 1) {
+            attackers--;
+            if (attackers <= 0) {
                 this.generateAttack();
             }
         }, this);
@@ -102,6 +105,7 @@ PopupBattle.prototype.startAttack = function() {
 };
 
 PopupBattle.prototype.generateAttack = function() {
+    console.log("generateAttack");
 
     this.showDamage(this.player, this.enemy.damage);
 
@@ -116,7 +120,6 @@ PopupBattle.prototype.generateAttack = function() {
         
         this.enemy.takeDamage(this.player.damage);
         this.enemy.bar.move(this.enemy.health);
-        console.log("END");
         this.endAttack();
     }, this);
 };
@@ -138,6 +141,7 @@ PopupBattle.prototype.showDamage = function(unit, damage) {
 };
 
 PopupBattle.prototype.endAttack = function() {
+    console.log('endAttack');
     let units = [{
         unit:this.player,
         direction: 1
@@ -153,11 +157,15 @@ PopupBattle.prototype.endAttack = function() {
             let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 100, Phaser.Easing.Quadratic.Out);
             tween.onComplete.add(function() {
                 this.survivors--;
+                console.log(this.survivors);
                 if (this.survivors <= 0) {
                     this.endTurn();
                 }
             }, this);
             tween.start();
+        } else {
+            /* If the unit is dead, make the bar disapear */
+            this.game.add.tween(single_unit.unit.bar).to({alpha:0}, 200).start();
         }
     }, this);
     /* No survivor left */
