@@ -15,21 +15,39 @@ GAME.Level.prototype.create = function() {
 };
 
 GAME.Level.prototype.createMap = function() {
+    this.background = this.game.add.tileSprite(0, 0, Math.ceil(this.game.width/48)*48, Math.ceil(this.game.height/48)*48, 'tileset:world', 208);
+
+    this.background.x = (this.game.width - this.background.width) / 2;
+    //this.background.y = (this.game.height - this.background.height) / 2;
+
+
+    /*
+    this.background.anchor.set(0.5, 0.5);
+    this.background.x = (this.game.width / 2);
+    this.background.y = (this.game.height / 2);
+    */
+
     this.mapContainer = this.game.add.group();
     this.map = new Map(this.game);
     this.map.onTileRevealed.add(this.onMapTileRevealed, this);
     this.mapContainer.addChild(this.map);
 
-    this.map.reveal(2, 4);
+    this.map.reveal(3, 6);
 
-    this.mapContainer.x = (this.game.width - this.mapContainer.width) / 2;
-    this.mapContainer.y = (this.game.height - this.mapContainer.height) / 2;
+    this.mapContainer.x = Math.round((this.game.width - this.mapContainer.width) / 2);
+    this.mapContainer.y = Math.ceil(Math.round((this.game.height - this.mapContainer.height) / 2) / 48) * 48;
+
+//this.background.x = -20;
+
+    console.log(this.mapContainer.x + "x" + this.mapContainer.y + " | " + this.background.x + "x" + this.background.y);
+
+    console.log(this.background.width + "x" + this.background.height);
 };
 
 GAME.Level.prototype.createPlayer = function() {
     this.player = new Unit(this.game, 'knight');
     this.player.health = GAME.player.health;
-    this.player.grid = new Phaser.Point(2, 4);
+    this.player.grid = new Phaser.Point(3, 6);
     this.player.x = (this.player.grid.x * this.player.width) + this.player.width/2;
     this.player.y = (this.player.grid.y * this.player.height) + this.player.height/2;
 

@@ -1,5 +1,7 @@
 function Map(game) {
 
+    this.size = new Phaser.Point(6, 7);
+
     this.cheat = false;
 
     Phaser.Group.call(this, game);
@@ -20,8 +22,8 @@ Map.prototype.createFOW = function() {
     this.fow = this.game.add.group();
     this.addChild(this.fow);
 
-    for (let y=0; y<5; y++) {
-        for (let x=0; x<5; x++) {
+    for (let y=0; y<this.size.y; y++) {
+        for (let x=0; x<this.size.x; x++) {
             let tile = this.create(0, 0, 'blank');
             tile.anchor.set(0.5, 0.5);
             tile.width = tile.height = 48;
@@ -30,6 +32,7 @@ Map.prototype.createFOW = function() {
             tile.y = (y * tile.height) + (tile.height/2);
             tile.tint = 0x000000;
             tile.alpha = (this.cheat ? 0.8 : 1);
+            tile.alpha = 0.5;
 
             this.fow.addChild(tile);
         }
@@ -46,8 +49,8 @@ Map.prototype.clickable = function(tileX, tileY) {
             if (Math.abs(x) != Math.abs(y)) {
                 tmpX = x + tileX;
                 tmpY = y + tileY;
-                if (tmpX >= 0 && tmpX < 5 && tmpY >= 0 && tmpY < 5) {
-                    let index = (tmpY * 5) + tmpX;
+                if (tmpX >= 0 && tmpX < this.size.x && tmpY >= 0 && tmpY < this.size.y) {
+                    let index = (tmpY * this.size.x) + tmpX;
                     if (this.fow.getChildAt(index).alpha > 0) {
                         if (this.cheat) {
                             this.fow.getChildAt(index).alpha = 0.4;
@@ -76,8 +79,8 @@ Map.prototype.init = function() {
     this.map = this.game.add.group();
     this.addChild(this.map);
 
-    for (let y=0; y<5; y++) {
-        for (let x=0; x<5; x++) {
+    for (let y=0; y<this.size.y; y++) {
+        for (let x=0; x<this.size.x; x++) {
             let tile = new Tile(this.game, x, y);
             this.map.addChild(tile);
         }
@@ -86,8 +89,8 @@ Map.prototype.init = function() {
 
 Map.prototype.generate = function() {
     /* Starting points */
-    let c = new Phaser.Point(2, 4);
-    this.map.getChildAt((c.y * 5) + c.x).setType("start");
+    let c = new Phaser.Point(3, 6);
+    this.map.getChildAt((c.y * this.size.x) + c.x).setType("start");
 
     /* Disabled 2 tiles */
      let tiles = this.getEmptyTiles();

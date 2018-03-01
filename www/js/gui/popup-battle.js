@@ -76,7 +76,6 @@ PopupBattle.prototype.setTile = function(tile) {
 };
 
 PopupBattle.prototype.startAttack = function() {
-    console.log("startAttack");
     let units = [{
         unit:this.player,
         direction: 1
@@ -105,8 +104,6 @@ PopupBattle.prototype.startAttack = function() {
 };
 
 PopupBattle.prototype.generateAttack = function() {
-    console.log("generateAttack");
-
     this.showDamage(this.player, this.enemy.damage);
 
     this.showDamage(this.enemy, this.player.damage);
@@ -130,7 +127,7 @@ PopupBattle.prototype.showDamage = function(unit, damage) {
     label.y = (unit.y - (unit.height/2));
 
     let tween = this.game.add.tween(label).to({y:label.y - 50}, 1000);
-    tween.onComplete.add(function(){
+    tween.onComplete.add(function() {
         label.destroy();
     }, this);
     tween.start();
@@ -141,7 +138,6 @@ PopupBattle.prototype.showDamage = function(unit, damage) {
 };
 
 PopupBattle.prototype.endAttack = function() {
-    console.log('endAttack');
     let units = [{
         unit:this.player,
         direction: 1
@@ -150,15 +146,14 @@ PopupBattle.prototype.endAttack = function() {
         direction: -1
     }];
 
-    this.survivors = 0;
+    let survivors = 0;
     units.forEach(function(single_unit) {
         if (single_unit.unit.isAlive()) {
-            this.survivors++;
+            survivors++;
             let tween = this.game.add.tween(single_unit.unit).to({x:single_unit.unit.originX}, 100, Phaser.Easing.Quadratic.Out);
             tween.onComplete.add(function() {
-                this.survivors--;
-                console.log(this.survivors);
-                if (this.survivors <= 0) {
+                survivors--;
+                if (survivors <= 0) {
                     this.endTurn();
                 }
             }, this);
@@ -169,7 +164,7 @@ PopupBattle.prototype.endAttack = function() {
         }
     }, this);
     /* No survivor left */
-    if (this.survivors == 0) {
+    if (survivors == 0) {
         this.endTurn();
     }
 };
