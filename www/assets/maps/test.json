@@ -1,9 +1,9 @@
 { "height":10,
  "layers":[
         {
-         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "data":[115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 0, 0, 115, 0, 0, 115, 0, 0, 115, 115, 0, 0, 115, 0, 0, 115, 0, 0, 115, 115, 115, 115, 115, 0, 0, 115, 0, 0, 115, 115, 0, 115, 0, 0, 0, 115, 0, 0, 115, 115, 0, 115, 0, 0, 0, 115, 0, 0, 115, 115, 0, 115, 0, 0, 0, 115, 0, 0, 115, 115, 0, 115, 115, 115, 115, 115, 115, 115, 115, 115, 0, 0, 0, 0, 115, 0, 0, 0, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115],
          "height":10,
-         "name":"tiles",
+         "name":"Tile Layer 1",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -33,6 +33,54 @@
             },
          "spacing":0,
          "tilecount":1,
+         "tileheight":48,
+         "tilewidth":48
+        }, 
+        {
+         "firstgid":2,
+         "image":"..\/tilesets\/world.png",
+         "imageheight":1824,
+         "imagewidth":2640,
+         "margin":0,
+         "name":"world",
+         "properties":
+            {
+
+            },
+         "spacing":0,
+         "tilecount":2090,
+         "tileheight":48,
+         "tilewidth":48
+        }, 
+        {
+         "firstgid":2092,
+         "image":"..\/tilesets\/items.png",
+         "imageheight":480,
+         "imagewidth":704,
+         "margin":0,
+         "name":"items",
+         "properties":
+            {
+
+            },
+         "spacing":0,
+         "tilecount":330,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "firstgid":2422,
+         "image":"..\/tilesets\/effectsSmall.png",
+         "imageheight":960,
+         "imagewidth":480,
+         "margin":0,
+         "name":"effectsSmall",
+         "properties":
+            {
+
+            },
+         "spacing":0,
+         "tilecount":200,
          "tileheight":48,
          "tilewidth":48
         }],

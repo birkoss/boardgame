@@ -9,12 +9,14 @@ GAME.Level.prototype.create = function() {
 
     this.createMap();
 
-    this.createWeaponPopup();
+    this.createStatusPopup();
 
     this.createPlayer();
 };
 
 GAME.Level.prototype.createMap = function() {
+    let sprite = this.game.add.tileSprite(0, 0, Math.ceil(this.game.width/48)*48, Math.ceil(this.game.height/48)*48, 'tileset:world', 688);    
+
     this.background = this.game.add.tileSprite(0, 0, Math.ceil(this.game.width/48)*48, Math.ceil(this.game.height/48)*48, 'tileset:world', 208);
 
     this.background.x = (this.game.width - this.background.width) / 2;
@@ -54,18 +56,9 @@ GAME.Level.prototype.createPlayer = function() {
     this.mapContainer.addChild(this.player);
 };
 
-GAME.Level.prototype.createWeaponPopup = function() {
-    this.currentWeapon = "";
-
-    let popup = new PopupWeapon(this.game);
-    popup.onWeaponChoosen.add(this.onWeaponPopupChanged, this);
-    popup.selectWeapon("sword");
+GAME.Level.prototype.createStatusPopup = function() {
+    let popup = new PopupStatus(this.game);
     popup.show();
-};
-
-GAME.Level.prototype.onWeaponPopupChanged = function(newWeapon) {
-    this.currentWeapon = newWeapon;
-    console.log("Current Weapon: " + newWeapon);
 };
 
 GAME.Level.prototype.move = function(tile) {

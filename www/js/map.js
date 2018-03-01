@@ -32,7 +32,7 @@ Map.prototype.createFOW = function() {
             tile.y = (y * tile.height) + (tile.height/2);
             tile.tint = 0x000000;
             tile.alpha = (this.cheat ? 0.8 : 1);
-            tile.alpha = 0.5;
+            //tile.alpha = 0.5;
 
             this.fow.addChild(tile);
         }
