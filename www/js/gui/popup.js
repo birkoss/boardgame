@@ -9,7 +9,8 @@ function Popup(game, config) {
         y: 50,
         originY: -this.game.height,
         backgroundSpeed: 200,
-        overlaySpeed: 500
+        overlaySpeed: 500,
+        destructible: true
     };
 
     /* Overwrite some values */
@@ -105,7 +106,9 @@ Popup.prototype.hide = function() {
         if (this.overlayContainer != null) {
             this.hideOverlay();
         } else {
-            this.destroy();
+            if (this.config.destructible) {
+                this.destroy();
+            }
         }
     }, this);
     tween.start();
@@ -114,7 +117,9 @@ Popup.prototype.hide = function() {
 Popup.prototype.hideOverlay = function() {
         let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0}, this.config.overlaySpeed);
         tween.onComplete.add(function() {
-            this.destroy();
+            if (this.config.destructible) {
+                this.destroy();
+            }
         }, this);
         tween.start();
 };

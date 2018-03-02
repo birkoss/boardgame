@@ -14,19 +14,32 @@ function PopupRollActions(game) {
 
     this.onActionsChoosen = new Phaser.Signal();
 
-    this.reel = new Reel(this.game);
-    this.reel.x = (this.backgroundContainer.width - this.reel.width) / 2;
-    this.reel.y = (this.backgroundContainer.height - this.reel.height) / 2;
-    this.backgroundContainer.addChild(this.reel);
-    this.reel.onValueChanged.add(this.slotValuePicked, this);
+    for (let i=0; i<2; i++) {
+        let card = new Card(this.game);
+        card.x = (this.backgroundContainer.width - card.width) / 2 + (i * (card.width + 10));
+        card.y = (this.backgroundContainer.height - card.height) / 2;
+        card.onPicked.add(this.onCardPicked, this);
+        card.onFlipped.add(this.onCardFlipped, this);
 
+        this.backgroundContainer.addChild(card);
+    }
+
+    this.nbrCards = 1;
 };
 
 PopupRollActions.prototype = Popup.prototype;
 PopupRollActions.prototype.constructor = Popup;
 
-PopupRollActions.prototype.slotValuePicked = function(slot, value) {
-   console.log("New value: " + value);
-   this.onActionsChoosen.dispatch(value);
+PopupRollActions.prototype.onCardFlipped = function(card) {
+   console.log("New value: " + card.value);
+   this.onActionsChoosen.dispatch(card.value);
    this.hide();
+};
+
+
+PopupRollActions.prototype.onCardPicked = function(card) {
+    if (this.nbrCards > 0) {
+        this.nbrCards--;
+        card.flip();
+    }
 };

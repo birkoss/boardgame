@@ -4,7 +4,8 @@ function PopupActions(game) {
     	height: 50,
     	x: 0,
     	y: game.height - 50,
-    	originY: game.height
+    	originY: game.height,
+    	destructible: false
     };
 
     Popup.call(this, game, config);
