@@ -7,7 +7,8 @@ GAME.Preload.prototype.preload = function() {
     this.preloadBar.anchor.set(0.5);
     this.load.setPreloadSprite(this.preloadBar);
 
-    this.load.tilemap('level:test', 'assets/maps/test.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('level:test', 'assets/maps/test.csv', null, Phaser.Tilemap.CSV);
+    //this.load.tilemap('level:test', 'assets/maps/test.json', null, Phaser.Tilemap.TILED_JSON);
 
     this.load.spritesheet('tileset:world', 'assets/tilesets/world.png', 48, 48);
     this.load.spritesheet('tileset:items', 'assets/tilesets/items.png', 32, 32);

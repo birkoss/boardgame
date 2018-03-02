@@ -6,6 +6,8 @@ function Unit(game, unitID) {
 
     this.setHealth(10);
 
+    this.onMoved = new Phaser.Signal();
+
     this.init();
 };
 
@@ -48,4 +50,31 @@ Unit.prototype.takeDamage = function(damage) {
         this.sprite.frame = this.game.rnd.integerInRange(94, 99);
         this.sprite.anchor.set(0.5, 0.5);
     }
+};
+
+Unit.prototype.placeTo = function(x, y) {
+    this.grid = new Phaser.Point(x, y);
+
+    this.x = (x * this.sprite.width) + (this.sprite.width/2);
+    this.y = (y * this.sprite.height) + (this.sprite.height/2);
+};
+
+Unit.prototype.moveTo = function(x, y) {
+    /* Face to the right direction */
+    if (this.grid.x < x) {
+        this.face(Unit.Facing.Left);
+    } else if (this.grid.x > x) {
+        this.face(Unit.Facing.Right);
+    }
+
+    this.grid = new Phaser.Point(x, y);
+
+    let nx = (x * this.sprite.width) + (this.sprite.width/2);
+    let ny = (y * this.sprite.height) + (this.sprite.height/2);
+
+    let tween = this.game.add.tween(this).to({x:nx, y:ny}, 200, Phaser.Easing.Elastic.Out);
+    tween.onComplete.add(function() {
+        this.onMoved.dispatch(this);
+    }, this);
+    tween.start();
 };

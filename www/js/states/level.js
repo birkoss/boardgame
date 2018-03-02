@@ -9,117 +9,141 @@ GAME.Level.prototype.create = function() {
 
     this.createMap();
 
-    this.createStatusPopup();
-
     this.createPlayer();
+
+
+
+    this.actionsContainer = this.game.add.group();
+
+    this.popupsContainer = this.game.add.group();
+
+    let popup = new PopupActions(this.game);
+    popup.onUseClicked.add(this.popupActionsUseClicked, this);
+    popup.onMoveClicked.add(this.popupActionsMoveClicked, this);
+    this.popupsContainer.addChild(popup);
+
+
+
+    //this.startTurn();
+
+    popup.show();
+
+    this.debug = this.game.add.bitmapText(0, 2, "font:normal", "xxxx", 10);
+    this.debug.tint = 0xff00ff;
+    this.debug.fixedToCamera = true;
+
+    this.updateDebug();
+};
+
+GAME.Level.prototype.updateDebug = function() {
+    this.debug.text = this.player.x + "x" + this.player.y + " | " + this.game.camera.x + "x" + this.game.camera.y + " | " + this.map.layers[0].x + "x" + this.map.layers[0].y + " | " + this.map.layers[0].data[15][5].worldX + "x" + this.map.layers[0].data[15][5].worldY;
 };
 
 GAME.Level.prototype.createMap = function() {
-    let sprite = this.game.add.tileSprite(0, 0, Math.ceil(this.game.width/48)*48, Math.ceil(this.game.height/48)*48, 'tileset:world', 688);    
+    this.map = this.game.add.tilemap('level:test', 48, 48);
 
-    this.background = this.game.add.tileSprite(0, 0, Math.ceil(this.game.width/48)*48, Math.ceil(this.game.height/48)*48, 'tileset:world', 208);
+    this.map.addTilesetImage('world', 'tileset:world');
 
-    this.background.x = (this.game.width - this.background.width) / 2;
-    //this.background.y = (this.game.height - this.background.height) / 2;
+    // Create layers
+    this.layers = {};
+    this.layers.floor = this.map.createLayer(0);
 
+    this.layers.floor.resizeWorld();
 
-    /*
-    this.background.anchor.set(0.5, 0.5);
-    this.background.x = (this.game.width / 2);
-    this.background.y = (this.game.height / 2);
-    */
-
-    this.mapContainer = this.game.add.group();
-    this.map = new Map(this.game);
-    this.map.onTileRevealed.add(this.onMapTileRevealed, this);
-    this.mapContainer.addChild(this.map);
-
-    this.map.reveal(3, 6);
-
-    this.mapContainer.x = Math.round((this.game.width - this.mapContainer.width) / 2);
-    this.mapContainer.y = Math.ceil(Math.round((this.game.height - this.mapContainer.height) / 2) / 48) * 48;
-
-//this.background.x = -20;
-
-    console.log(this.mapContainer.x + "x" + this.mapContainer.y + " | " + this.background.x + "x" + this.background.y);
-
-    console.log(this.background.width + "x" + this.background.height);
+    this.map.setCollisionByIndex(887);
 };
 
 GAME.Level.prototype.createPlayer = function() {
-    this.player = new Unit(this.game, 'knight');
-    this.player.health = GAME.player.health;
-    this.player.grid = new Phaser.Point(3, 6);
-    this.player.x = (this.player.grid.x * this.player.width) + this.player.width/2;
-    this.player.y = (this.player.grid.y * this.player.height) + this.player.height/2;
+    let startingPosition = this.map.getTile(4, 15);
 
-    this.mapContainer.addChild(this.player);
+    console.log("Starting Position: ", startingPosition);
+
+    this.player = new Unit(this.game, 'knight');
+    this.player.onMoved.add(this.onPlayerMoved, this);
+
+    if (startingPosition) {
+        this.player.placeTo(4, 15);
+    }
+
+    this.game.camera.follow(this.player);//, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 };
 
-GAME.Level.prototype.createStatusPopup = function() {
-    let popup = new PopupStatus(this.game);
+GAME.Level.prototype.enableClick = function() {
+    let nextTile = null;
+    for (let y=-1; y<=1; y++) {
+        for (let x=-1; x<=1; x++) {
+            if (Math.abs(x) != Math.abs(y)) {
+                nextTile = this.map.getTile(this.player.grid.x + x, this.player.grid.y + y);
+                if (nextTile != null) {
+                    let action = new Action(this.game, nextTile.worldX, nextTile.worldY);
+                    this.actionsContainer.addChild(action);
+                    action.direction = {x:x, y:y};
+                    action.inputEnabled = true;
+                    action.events.onInputUp.add(function() {
+                        this.takeAction();
+                        
+                        this.actionsContainer.removeAll(true);
+
+                        this.player.moveTo(this.player.grid.x + action.direction.x, this.player.grid.y + action.direction.y);
+                    }, this);
+                }
+            }
+        }
+    }
+};
+
+GAME.Level.prototype.startTurn = function() {
+console.log(this.getCurrentPopup());
+    this.getCurrentPopup().setActions(this.turns);
+
+    this.enableClick();
+};
+
+GAME.Level.prototype.takeAction = function() {
+    this.turns--;
+
+    this.getCurrentPopup().setActions(this.turns);
+};
+
+GAME.Level.prototype.endTurn = function() {
+    if (this.turns <= 0) {
+        this.getCurrentPopup().hide();
+    } else {
+        this.enableClick();
+    }   
+};
+
+GAME.Level.prototype.getCurrentPopup = function() {
+    return this.popupsContainer.getChildAt(this.popupsContainer.children.length-1);
+};
+
+GAME.Level.prototype.popupActionsUseClicked = function() {
+
+};
+
+GAME.Level.prototype.popupActionsMoveClicked = function() {
+    /*
+    let popup = new PopupMove(this.game);
+    this.popupsContainer.addChild(popup);
+
+    this.startTurn();
+
+    popup.show();
+    */
+
+    let popup = new PopupRollActions(this.game);
+    popup.onActionsChoosen.add(this.onPopupRollActionsChoosen, this);
     popup.show();
 };
 
-GAME.Level.prototype.move = function(tile) {
-    if (this.player.x < tile.x) {
-        this.player.face(Unit.Facing.Right);
-    } else if (this.player.x > tile.x) {
-        this.player.face(Unit.Facing.Left);
-    }
-
-    let tween = this.game.add.tween(this.player).to({x:tile.x, y:tile.y}, 200);
-    tween.onComplete.add(function() {
-        this.enableClick(tile.grid.x, tile.grid.y);
-        this.player.grid = new Phaser.Point(tile.grid.x, tile.grid.y);
-    }, this);
-    tween.start();
+GAME.Level.prototype.onPopupRollActionsChoosen = function(turns) {
+    this.turns = turns;
+    let popup = new PopupMove(this.game);
+    this.popupsContainer.addChild(popup);
+    this.startTurn();
+    popup.show();
 };
 
-GAME.Level.prototype.onMapTileRevealed = function(tile) {
-    switch(tile.type) {
-        case 'disabled':
-            this.enableClick(this.player.grid.x, this.player.grid.y);
-            break;
-        case 'enemy':
-            if (this.player.x < tile.x) {
-                this.player.face(Unit.Facing.Right);
-            } else if (this.player.x > tile.x) {
-                this.player.face(Unit.Facing.Left);
-            }
-
-            let popup = new PopupBattle(this.game);
-            popup.setTile(tile);
-            popup.onBattleCompleted.add(this.onPopupBattleCompleted, this);
-            popup.show();
-            break;
-        case 'key':
-        case 'chest':
-            this.move(tile);
-            break;
-        case 'start':
-            this.enableClick(tile.grid.x, tile.grid.y);
-            break;
-        default:
-            if (this.player.alpha == 0) {
-                this.game.add.tween(this.player).to({alpha: 1}, 300).start();
-            }
-            this.move(tile);
-    }
-};
-
-GAME.Level.prototype.enableClick = function(x, y) {
-    let clickableTiles = this.map.clickable(x, y);
-    if (clickableTiles == 0) {
-        alert('GAME OVER');
-    }
-};
-
-GAME.Level.prototype.onPopupBattleCompleted = function(hasWin, data) {
-    this.player.setHealth(GAME.player.health);
-
-    if (hasWin) {
-        data.tile.unit.setHealth(data.enemy.health);
-        this.move(data.tile);
-    }
+GAME.Level.prototype.onPlayerMoved = function(unit) {
+    this.endTurn();
 };
