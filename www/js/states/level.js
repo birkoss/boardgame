@@ -57,7 +57,7 @@ GAME.Level.prototype.createMap = function() {
 };
 
 GAME.Level.prototype.createPlayer = function() {
-    let startingPosition = this.map.getTile(4, 15);
+    let startingPosition = this.map.getTile(2, 2);
 
     console.log("Starting Position: ", startingPosition);
 
@@ -65,7 +65,7 @@ GAME.Level.prototype.createPlayer = function() {
     this.player.onMoved.add(this.onPlayerMoved, this);
 
     if (startingPosition) {
-        this.player.placeTo(4, 15);
+        this.player.placeTo(2, 2);
     }
 
     this.game.camera.follow(this.player);//, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
@@ -104,11 +104,12 @@ GAME.Level.prototype.startTurn = function() {
 GAME.Level.prototype.takeAction = function() {
     this.turns--;
 
-    this.getCurrentPopup().setActions(this.turns);
+    this.popups.status.setActions(this.turns);
 };
 
 GAME.Level.prototype.endTurn = function() {
     if (this.turns <= 0) {
+        console.log("SHOW");
         this.popups.actions.show();
     } else {
         this.enableClick();

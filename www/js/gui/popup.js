@@ -68,7 +68,7 @@ Popup.prototype.show = function() {
         this.overlayContainer.getChildAt(0).alpha = 0;
     }
 
-    let backgroundY = this.backgroundContainer.y;
+    let backgroundY = this.config.y;
     this.backgroundContainer.y = this.config.originY;
 
     if (this.overlayContainer != null) {
@@ -83,6 +83,7 @@ Popup.prototype.show = function() {
 }
 
 Popup.prototype.showBackground = function(backgroundY) {
+    console.log("SB: " + backgroundY);
     let tween = this.game.add.tween(this.backgroundContainer).to({y:backgroundY}, this.config.backgroundSpeed);//, Phaser.Easing.Circular.Out);
     tween.start();
 }
@@ -115,11 +116,11 @@ Popup.prototype.hide = function() {
 }
 
 Popup.prototype.hideOverlay = function() {
-        let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0}, this.config.overlaySpeed);
-        tween.onComplete.add(function() {
-            if (this.config.destructible) {
-                this.destroy();
-            }
-        }, this);
-        tween.start();
+    let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0}, this.config.overlaySpeed);
+    tween.onComplete.add(function() {
+        if (this.config.destructible) {
+            this.destroy();
+        }
+    }, this);
+    tween.start();
 };
