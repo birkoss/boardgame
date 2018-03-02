@@ -154,7 +154,5 @@ Map.prototype.onActionClicked = function(tile) {
         single_action.destroy();
     }, this);
 
-    console.log(tile.grid);
-
     this.reveal(tile.grid.x, tile.grid.y);
 };

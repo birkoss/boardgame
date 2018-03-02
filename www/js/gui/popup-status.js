@@ -27,7 +27,7 @@ PopupStatus.prototype.init = function() {
 
     this.backgroundContainer.addChild(this.labelActions);
 
-    this.setActions(1);
+    this.setActions(0);
 };
 
 PopupStatus.prototype.setActions = function(value) {

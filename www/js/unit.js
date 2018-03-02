@@ -21,7 +21,6 @@ Unit.Facing = {
 
 Unit.prototype.face = function(direction) {
     if (this.sprite.scale.x != direction) {
-        console.log("FACE: " + direction);
         this.sprite.scale.x = direction;
     }
 };
