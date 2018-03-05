@@ -76,7 +76,7 @@ Unit.prototype.moveTo = function(x, y) {
     let nx = (x * this.width) + (this.width/2);
     let ny = (y * this.height) + (this.height/2);
 
-    let tween = this.game.add.tween(this).to({x:nx, y:ny}, 200, Phaser.Easing.Elastic.Out);
+    let tween = this.game.add.tween(this).to({x:nx, y:ny}, 400, Phaser.Easing.Elastic.Out);
     tween.onComplete.add(function() {
         this.onMoved.dispatch(this);
     }, this);

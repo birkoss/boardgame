@@ -14,6 +14,8 @@ function PopupBattle(game) {
 
     this.createMap();
 
+    this.setTurns(1);
+
     this.player = new Unit(this.game, 'knight');
     this.player.x = this.map.getChildAt(11).x;
     this.player.face(Unit.Facing.Right);
@@ -46,6 +48,7 @@ PopupBattle.prototype = Popup.prototype;
 PopupBattle.prototype.constructor = Popup;
 
 PopupBattle.prototype.createMap = function() {
+    console.log('CREATE MAP');
     this.map = this.game.add.group();
 
     for (let y=0; y<5; y++) {
@@ -60,16 +63,20 @@ PopupBattle.prototype.createMap = function() {
     this.backgroundContainer.addChild(this.map);
 };
 
-PopupBattle.prototype.setTile = function(tile) {
-    this.tile = tile;
+PopupBattle.prototype.setTurns = function(turns) {
+    this.turns = turns;
+};
 
-    this.enemy = new Unit(this.game, this.tile.unit.unitID);
-    this.enemy.setHealth(this.tile.unit.health);
+PopupBattle.prototype.setEnemy = function(enemy) {
+    this.tile = enemy.grid;
+    
+    this.enemy = new Unit(this.game, enemy.unitID);
+    this.enemy.setHealth(enemy.health);
     this.enemy.x = this.map.getChildAt(13).x;
     this.enemy.y = this.map.getChildAt(13).y;
     this.map.addChild(this.enemy);
 
-    this.enemy.bar = new Bar(this.game, this.tile.unit.health, this.tile.unit.health);
+    this.enemy.bar = new Bar(this.game, enemy.health, enemy.health);
     this.enemy.bar.x = this.enemy.x;
     this.enemy.bar.y = this.enemy.y - 50;
     this.map.addChild(this.enemy.bar);
@@ -170,9 +177,15 @@ PopupBattle.prototype.endAttack = function() {
 };
 
 PopupBattle.prototype.endTurn = function() {
+    this.turns--;
+
     if (this.player.isAlive()) {
         if (this.enemy.isAlive()) {
-            this.enableButtons();
+            if (this.turns > 0) {
+                this.enableButtons();
+            } else {
+                this.draw();
+            }
         } else {
             this.win();
         }
@@ -199,7 +212,7 @@ PopupBattle.prototype.lose = function() {
     }, this);
 
     let button = this.game.add.button(0, 0, "gui:button", this.onButtonOkClicked, this, 0, 1, 0, 1);
-    button.win = false;
+    button.status = 'lose';
     this.backgroundContainer.addChild(button);
     button.y = this.backgroundContainer.height - button.height - 10;
     button.x = (this.backgroundContainer.width - button.width) / 2;
@@ -218,7 +231,26 @@ PopupBattle.prototype.win = function() {
     }, this);
 
     let button = this.game.add.button(0, 0, "gui:button", this.onButtonOkClicked, this, 0, 1, 0, 1);
-    button.win = true;
+    button.status = 'win';
+    this.backgroundContainer.addChild(button);
+    button.y = this.backgroundContainer.height - button.height - 10;
+    button.x = (this.backgroundContainer.width - button.width) / 2;
+    this.buttons.push(button);
+
+    let label = this.game.add.bitmapText(0, 2, "font:normal", "Ok", 10);
+    label.tint = 0xffffff;
+    label.x = (button.width-label.width) / 2;
+    label.y = ((button.height-label.height) / 2) - 2;
+    button.addChild(label);
+};
+
+PopupBattle.prototype.draw = function() {
+    this.buttons.forEach(function(single_button) {
+        single_button.destroy();
+    }, this);
+
+    let button = this.game.add.button(0, 0, "gui:button", this.onButtonOkClicked, this, 0, 1, 0, 1);
+    button.status = 'draw';
     this.backgroundContainer.addChild(button);
     button.y = this.backgroundContainer.height - button.height - 10;
     button.x = (this.backgroundContainer.width - button.width) / 2;
@@ -245,5 +277,5 @@ PopupBattle.prototype.onButtonAttackClicked = function(button) {
 
 PopupBattle.prototype.onButtonOkClicked = function(button) {
     this.hide();
-    this.onBattleCompleted.dispatch(button.win, {tile:this.tile, enemy:this.enemy});
+    this.onBattleCompleted.dispatch(button.status, {enemy:this.enemy, tile:this.tile, turns:this.turns});
 };
