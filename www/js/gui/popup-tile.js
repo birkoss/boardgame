@@ -27,16 +27,38 @@ function PopupTile(game, tile) {
     label.y = ((button.height-label.height) / 2) - 2;
     button.addChild(label);
 
+    let rnd = this.game.rnd.integerInRange(1, 100);
+
     let text = this.game.add.bitmapText(0, 2, "font:normal", "Close", 10);
     switch (this.tile.status) {
         case 'good':
-        text.text = "Something good has happened";
+            if (rnd > 90) {
+                text.text = "You find a chest!";
+            } else if (rnd > 70) {
+                text.text = "Welcome to the shop!";
+            } else if (rnd > 45) {
+                text.text = "You got X turns!";
+            } else {
+                text.text = "You are healed!";
+            }
             break;
         case 'bad':
-            text.text = "Something bad has happened";
+            if (rnd > 90) {
+                text.text = "Return to start!";
+            } else if (rnd > 55) {
+                text.text = "You lost X turns!";
+            } else {
+                text.text = "You are damaged!";
+            }
             break;
         case 'neutral':
-            text.text = "Maybe something good has happen";
+            if (rnd > 90) {
+                text.text = "Warp Randomly!";
+            } else if (rnd > 55) {
+                text.text = "New enemies!";
+            } else {
+                text.text = "Reset tiles!";
+            }
             break;
     }
     text.tint = 0x000000;
