@@ -22,6 +22,8 @@ function Popup(game, config) {
         this.createOverlay();
     }
     
+    this.onHidden = new Phaser.Signal();
+
     this.createBackground();
 
     this.fixedToCamera = true;
@@ -108,6 +110,7 @@ Popup.prototype.hide = function() {
             this.hideOverlay();
         } else {
             if (this.config.destructible) {
+                this.onHidden.dispatch(this);
                 this.destroy();
             }
         }
@@ -119,6 +122,7 @@ Popup.prototype.hideOverlay = function() {
     let tween = this.game.add.tween(this.overlayContainer.getChildAt(0)).to({alpha:0}, this.config.overlaySpeed);
     tween.onComplete.add(function() {
         if (this.config.destructible) {
+            this.onHidden.dispatch(this);
             this.destroy();
         }
     }, this);

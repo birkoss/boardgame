@@ -51,17 +51,37 @@ GAME.Level.prototype.createMap = function() {
     this.layers = {};
     this.layers.floor = this.map.createLayer(0);
 
+    let rnd = 0;
+    let tiles = {'good':1728, 'neutral':1328, 'bad':1325};
+    this.layers.floor.layer.data.forEach(function(single_row) {
+        single_row.forEach(function(single_cell) {
+            if (single_cell.index == 335) {
+                single_cell
+                rnd = this.game.rnd.integerInRange(1, 10);
+                newIndex = 0;
+                single_cell.status = "";
+                if (rnd < 3) {
+                    single_cell.status = "good";
+                } else if (rnd < 6) {
+                    single_cell.status = "bad";
+                } else if (rnd < 9) {
+                    single_cell.status = "neutral";
+                }
+
+
+                if (single_cell.status != "") {
+                    this.map.replace(single_cell.index, tiles[single_cell.status], single_cell.x, single_cell.y, 1, 1);
+                }
+            }
+        }, this);
+    }, this);
+
     this.layers.floor.resizeWorld();
 
     this.map.setCollisionByIndex(887);
 };
 
 GAME.Level.prototype.createPlayer = function() {
-
-
-
-
-
 
     this.enemies = [];
     let e = new Unit(this.game, 'rat');
@@ -186,7 +206,18 @@ GAME.Level.prototype.onPopupRollActionsChoosen = function(turns) {
 };
 
 GAME.Level.prototype.onPlayerMoved = function(unit) {
-    this.endTurn();
+    let tile = this.map.getTile(unit.grid.x, unit.grid.y);
+
+    if (tile.status == "") {
+        this.endTurn();
+    } else {
+        this.popups.tile = new PopupTile(this.game, tile);
+        this.popups.tile.onHidden.add(function() {
+            this.endTurn();
+        }, this);
+        this.popups.tile.show();
+    }
+    console.log(tile);
 };
 
 GAME.Level.prototype.onPopupBattleResolved = function(status, data) {

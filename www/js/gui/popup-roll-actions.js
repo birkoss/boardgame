@@ -34,11 +34,10 @@ PopupRollActions.prototype.onCardFlipped = function(card) {
    console.log("New value: " + card.value);
    this.onActionsChoosen.dispatch(card.value);
    
-    this.game.time.events.add(1000, function() {
+    this.game.time.events.add(500, function() {
         this.hide();
     }, this);
 };
-
 
 PopupRollActions.prototype.onCardPicked = function(card) {
     if (this.nbrCards > 0) {
